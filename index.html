@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-light: #f0f7ff;          
+    --bg-light: #f0f7ff;         
     --bg-accent: #badfdb;         
     --env-bg: #ffffff;            /* 깨끗한 화이트 봉투 바디 */
     --env-border: #f3e8ff;        
@@ -521,7 +521,8 @@
     let startTime = localStorage.getItem(STORAGE_KEY);
 
     if (!startTime) {
-      startTime = Date.now() - (4 * 60 * 60 * 1000);
+      // 💡 최초 접속한 실제 현재 시간으로 설정
+      startTime = Date.now();
       localStorage.setItem(STORAGE_KEY, startTime);
     } else {
       startTime = parseInt(startTime, 10);
