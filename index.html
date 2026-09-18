@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evan × Rebet | Atelier Archive</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-light: #f0f7ff;          
+    --bg-accent: #badfdb;         
+    --env-bg: #ffffff;            /* 깨끗한 화이트 봉투 바디 */
+    --env-border: #f3e8ff;        
+    --paper-bg: #ffffff;          
+    --text-primary: #222226;      
+    --text-secondary: #625d73;    
+    --text-muted: #8d85a3;        
+    --accent-color: #3b82f6;      
+    --border-color: #fce7f3;      
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+  html, body { height: 100%; overflow-x: hidden; }
+
+  body {
+    background: radial-gradient(circle at 50% 30%, var(--bg-accent) 0%, var(--bg-light) 100%);
+    color: var(--text-primary);
+    font-family: "Pretendard Variable", -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+    user-select: none;
+    perspective: 1500px;
+  }
+
+  .stage {
+    position: relative;
+    width: 100%;
+    max-width: 620px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 550px;
+  }
+
+  /* ✉️ 완전히 새롭게 갈아엎은 모던 프리미엄 카드 홀더/봉투 */
+  .envelope-wrapper {
+    position: absolute;
+    width: 100%;
+    max-width: 440px;
+    height: 300px;
+    background: var(--env-bg);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 25px 50px rgba(59, 130, 246, 0.12), 
+                0 10px 20px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 36px;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease 0.4s;
+  }
+
+  .envelope-wrapper:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 30px 60px rgba(59, 130, 246, 0.2), 
+                0 15px 25px rgba(0, 0, 0, 0.06);
+  }
+
+  .env-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .env-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+  }
+
+  .env-badge {
+    width: 32px;
+    height: 32px;
+    background: var(--bg-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: var(--accent-color);
+  }
+
+  .env-center {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .env-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+  }
+
+  .env-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--accent-color);
+    letter-spacing: 1px;
+  }
+
+  .env-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 18px;
+  }
+
+  .env-action {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .env-action span {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+  }
+
+  .envelope-wrapper:hover .env-action span {
+    transform: translateX(4px);
+  }
+
+  .env-from {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* 오픈 시 애니메이션 */
+  .stage.open .envelope-wrapper {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.9);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  /* 📜 서약서 본문 */
+  .canvas {
+    width: 100%;
+    background: var(--paper-bg);
+    padding: 70px 52px;
+    border-radius: 16px;
+    box-shadow: 0 30px 80px rgba(59, 130, 246, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 46px;
+    position: relative;
+    z-index: 5;
+    
+    opacity: 0;
+    transform: translateY(180px) scale(0.85);
+    pointer-events: none;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease 0.2s;
+  }
+
+  .stage.open .canvas {
+    z-index: 30;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+    transition-delay: 0.2s;
+  }
+
+  .bgm-tag {
+    position: absolute;
+    top: 32px;
+    right: 32px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .bgm-tag:hover { color: var(--accent-color); }
+
+  .header-zone {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sub-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--accent-color);
+    letter-spacing: 3px;
+    font-weight: 600;
+  }
+  .main-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.85rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+  }
+
+  .timer-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 320px;
+  }
+  .timer-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+  }
+  .timer-value {
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+  }
+
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+    width: 100%;
+  }
+
+  .profile-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .image-wrapper {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    background-color: #f8fafc;
+    overflow: hidden;
+    position: relative;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.1);
+  }
+  .image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .profile-item:hover .image-wrapper img {
+    transform: scale(1.04);
+  }
+
+  .caption-box {
+    margin-top: 18px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .char-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.65rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--text-primary);
+  }
+  .char-quote {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: -0.2px;
+  }
+
+  .footer-zone {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+  }
+  .statement {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    letter-spacing: -0.2px;
+  }
+  .signature-group {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+  .sign-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    letter-spacing: 1px;
+  }
+  .stamp {
+    width: 36px;
+    height: 36px;
+    border: 1.5px solid #f43f5e;
+    color: #f43f5e;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.725rem;
+    font-weight: 600;
+    font-family: 'Noto Serif KR', serif;
+    transform: rotate(-10deg);
+  }
+
+  .sparkle {
+    position: fixed;
+    pointer-events: none;
+    font-size: 1.2rem;
+    animation: sparkle-anim 0.8s linear forwards;
+    z-index: 9999;
+  }
+
+  @keyframes sparkle-anim {
+    0% {
+      transform: translate(0, 0) scale(0.5) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--tx), var(--ty)) scale(1.4) rotate(180deg);
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 550px) {
+    .canvas { padding: 48px 24px; gap: 36px; }
+    .profile-grid { grid-template-columns: 1fr; gap: 36px; }
+    .main-title { font-size: 1.5rem; }
+    .envelope-wrapper { max-width: 320px; height: 250px; padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 🎵 유튜브 백그라운드 오디오 -->
+<div style="display:none;">
+  <div id="youtubeBgm"></div>
+</div>
+
+<div class="stage" id="stage">
+
+  <!-- ✉️ 완전 새로 바뀐 모던 프리미엄 카드 홀더 -->
+  <div class="envelope-wrapper" onclick="openEnvelope(event)">
+    <div class="env-top">
+      <span class="env-label">Archive</span>
+      <div class="env-badge">♥</div>
+    </div>
+    <div class="env-center">
+      <div class="env-title">무기한 계약연애 서약서</div>
+      <div class="env-sub">Evan × Rebet</div>
+    </div>
+    <div class="env-bottom">
+      <span class="env-from">From. you</span>
+      <div class="env-action">Open <span>→</span></div>
+    </div>
+  </div>
+
+  <!-- 📜 서약서 본문 -->
+  <div class="canvas">
+
+    <button class="bgm-tag" id="bgmToggle">Sound On</button>
+
+    <!-- 헤더 -->
+    <div class="header-zone">
+      <span class="sub-title">Contract of Agreement</span>
+      <h1 class="main-title">무기한 계약연애 서약서</h1>
+    </div>
+
+    <!-- 지속 누적 타이머 -->
+    <div class="timer-box">
+      <span class="timer-label">Time Elapsed</span>
+      <div class="timer-value" id="timer">00시간 00분 00초</div>
+    </div>
+
+    <!-- 이미지 섹션 -->
+    <div class="profile-grid">
+
+      <!-- Evan -->
+      <div class="profile-item">
+        <div class="image-wrapper">
+          <img src="photo_evan.jpg" alt="Evan Photo">
+        </div>
+        <div class="caption-box">
+          <div class="char-name">Evan</div>
+          <div class="char-quote">" 빌런은 너를 위해 세계를 버리고. "</div>
+        </div>
+      </div>
+
+      <!-- Rebet -->
+      <div class="profile-item">
+        <div class="image-wrapper">
+          <img src="photo_rebet.jpg" alt="Rebet Photo">
+        </div>
+        <div class="caption-box">
+          <div class="char-name">Rebet</div>
+          <div class="char-quote">" 히어로는 세계를 위해 자신을 버려. "</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 서명 -->
+    <div class="footer-zone">
+      <p class="statement">위 두 사람의 관계가 무기한 유효함을 서약합니다.</p>
+      <div class="signature-group">
+        <span class="sign-name">Evan</span>
+        <div class="stamp">서약</div>
+        <span class="sign-name">Rebet</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- 유튜브 IFrame API -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<script>
+  let player;
+  let bgmState = true;
+
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('youtubeBgm', {
+      height: '0',
+      width: '0',
+      videoId: '7YHDKxYsQ7s',
+      playerVars: {
+        'autoplay': 0,
+        'loop': 1,
+        'playlist': '7YHDKxYsQ7s'
+      }
+    });
+  }
+
+  function createSparkle(e) {
+    const symbols = ['💖'];
+    const x = e.clientX;
+    const y = e.clientY;
+
+    for (let i = 0; i < 3; i++) {
+      const span = document.createElement('span');
+      span.className = 'sparkle';
+      span.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+      
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 30 + Math.random() * 50;
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance;
+
+      span.style.left = `${x}px`;
+      span.style.top = `${y}px`;
+      span.style.setProperty('--tx', `${tx}px`);
+      span.style.setProperty('--ty', `${ty}px`);
+
+      document.body.appendChild(span);
+      setTimeout(() => span.remove(), 800);
+    }
+  }
+
+  window.addEventListener('click', function(e) {
+    createSparkle(e);
+  });
+
+  function openEnvelope(e) {
+    const stage = document.getElementById('stage');
+    if (!stage.classList.contains('open')) {
+      stage.classList.add('open');
+      
+      if (player && typeof player.playVideo === 'function' && bgmState) {
+        player.playVideo();
+      }
+    }
+  }
+
+  function initTimer() {
+    const STORAGE_KEY = 'evan_rebet_start_timestamp';
+    let startTime = localStorage.getItem(STORAGE_KEY);
+
+    if (!startTime) {
+      startTime = Date.now() - (4 * 60 * 60 * 1000);
+      localStorage.setItem(STORAGE_KEY, startTime);
+    } else {
+      startTime = parseInt(startTime, 10);
+    }
+
+    function updateTimer() {
+      const now = Date.now();
+      const diff = now - startTime;
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const mins = Math.floor((diff / (1000 * 60)) % 60);
+      const secs = Math.floor((diff / 1000) % 60);
+
+      const pad = (n) => String(n).padStart(2, '0');
+
+      if (hours >= 24) {
+        const days = Math.floor(hours / 24) + 1;
+        const remainHours = hours % 24;
+        document.getElementById('timer').innerText = `${days}일째 ${pad(remainHours)}시간 ${pad(mins)}분 ${pad(secs)}초`;
+      } else {
+        document.getElementById('timer').innerText = `${pad(hours)}시간 ${pad(mins)}분 ${pad(secs)}초`;
+      }
+    }
+
+    setInterval(updateTimer, 1000);
+    updateTimer();
+  }
+
+  initTimer();
+
+  document.getElementById('bgmToggle').addEventListener('click', function(e) {
+    e.stopPropagation();
+    bgmState = !bgmState;
+    
+    if (bgmState) {
+      this.innerText = "Sound On";
+      if (player && typeof player.playVideo === 'function') {
+        player.playVideo();
+      }
+    } else {
+      this.innerText = "Sound Off";
+      if (player && typeof player.pauseVideo === 'function') {
+        player.pauseVideo();
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
