@@ -517,20 +517,18 @@
   }
 
   function initTimer() {
-    const STORAGE_KEY = 'evan_rebet_start_timestamp';
-    let startTime = localStorage.getItem(STORAGE_KEY);
-
-    if (!startTime) {
-      // 💡 최초 접속한 실제 현재 시간으로 설정
-      startTime = Date.now();
-      localStorage.setItem(STORAGE_KEY, startTime);
-    } else {
-      startTime = parseInt(startTime, 10);
-    }
+    // 💡 2026년 9월 18일 오후 5시 (17시 0분 0초)
+    // 자바스크립트 월(Month)은 0부터 시작하므로 9월은 8입니다.
+    const startTime = new Date(2026, 8, 18, 17, 0, 0).getTime();
 
     function updateTimer() {
       const now = Date.now();
       const diff = now - startTime;
+
+      if (diff < 0) {
+        document.getElementById('timer').innerText = "시작 전입니다.";
+        return;
+      }
 
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const mins = Math.floor((diff / (1000 * 60)) % 60);
